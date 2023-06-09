@@ -73,14 +73,36 @@ const findPersonById = (personId, done) => {
 
 const findEditThenSave = (personId, done) => {
   const foodToAdd = "hamburger";
-
-  done(null /*, data*/);
+  findPersonById(personId, (err, data) => {
+    data.favoriteFoods.push(foodToAdd);
+    const person = new Person(data);
+    person.save((err, data) => {
+      if (err) {
+        done(err);
+      } 
+      done(null, data);
+    })
+  });
+  
 };
 
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
-
-  done(null /*, data*/);
+  Person.findOneAndUpdate(
+  {
+    name: personName // search query
+  },
+  {
+    age: ageToSet // field:values to update
+  },
+  {
+    new: true, // return updated doc
+    runValidators: true // validate before update
+  }).then((data) => {
+     done(null, data);
+  }).catch((err) => {
+    done(err);
+  });
 };
 
 const removeById = (personId, done) => {
